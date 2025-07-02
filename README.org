@@ -1,10 +1,9 @@
 #+title: Eighty
 
-The static website generator for Wei.
+The static website generator for Core Paper and other projects.
 
 * Overview
-This is the static website generator Wei uses for many of its
-websites, including That World, Core Paper and others.
+This is the static website generator used mainly by Core Paper project.
 
 * Extensions
 - =jsondoc=: Bundled document, where the =content= attribute is
