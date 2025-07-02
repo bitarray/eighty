@@ -3,7 +3,7 @@
 The static website generator for Core Paper and other projects.
 
 * Overview
-This is the static website generator used mainly by Core Paper project.
+This is the static website generator used mainly by the Core Paper project.
 
 * Extensions
 - =jsondoc=: Bundled document, where the =content= attribute is
