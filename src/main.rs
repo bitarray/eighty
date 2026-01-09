@@ -39,6 +39,13 @@ enum Command {
         /// Build target.
         target: String,
     },
+    /// Build multiple projects.
+    BuildAll {
+        /// Project root.
+        root: String,
+        /// Build target.
+        target: String,
+    },
     /// Serve a project in localhost for development.
     Serve {
         /// Site root.
@@ -54,6 +61,11 @@ fn main() -> Result<(), Error> {
             let site_path = Path::new(&site);
             let target_path = Path::new(&target);
             command::build::build(&site_path, &target_path)?;
+        }
+        Command::BuildAll { root, target } => {
+            let root_path = Path::new(&root);
+            let target_path = Path::new(&target);
+            command::build::build_all(&root_path, &target_path)?;
         }
         Command::Serve { site } => {
             let site_path = Path::new(&site);
