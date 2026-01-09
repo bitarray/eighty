@@ -19,6 +19,7 @@
 use crate::Error;
 use serde::{Deserialize, Serialize};
 use std::{path::Path, process::Command};
+use tracing::error;
 
 #[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -59,6 +60,10 @@ pub fn process_asciidoc(site_path: &Path, rel_path: &Path) -> Result<AsciiDocOut
         .output()?;
 
     if !output.status.success() {
+        match str::from_utf8(&output.stderr) {
+            Ok(stderr) => error!("Asciidoc command failed with stderr: {}", stderr),
+            Err(_) => error!("Asciidoc command failed and cannot decode stderr."),
+        }
         return Err(Error::RunCommandFailed);
     }
 

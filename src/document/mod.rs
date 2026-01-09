@@ -27,6 +27,7 @@ use std::{
     sync::Arc,
     time::SystemTime,
 };
+use tracing::info;
 
 #[derive(Hash, Eq, Clone, PartialEq, Debug, PartialOrd, Ord)]
 pub struct DocumentName {
@@ -234,7 +235,7 @@ impl RenderedDocument {
     ) -> Result<RenderedDocument, Error> {
         let rel_file_path = &document.rel_source_path;
 
-        println!("[{}] Rendering document {:?} ...", site.name, rel_file_path);
+        info!("[{}] Rendering document {:?} ...", site.name, rel_file_path);
 
         Ok(match document.typ {
             DocumentType::AsciiDoc => {

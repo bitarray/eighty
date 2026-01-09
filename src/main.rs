@@ -54,6 +54,8 @@ enum Command {
 }
 
 fn main() -> Result<(), Error> {
+    tracing_subscriber::fmt::init();
+
     let args = Cli::parse();
 
     match args.command {
