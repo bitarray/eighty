@@ -46,6 +46,8 @@ fn main() -> Result<(), Error> {
         let site_name = matches.value_of("site").expect("site is required");
 
         command::serve::serve(&root_path, &site_name)?;
+    } else {
+        return Err(Error::UnknownCommand);
     }
 
     Ok(())

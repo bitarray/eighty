@@ -23,6 +23,7 @@ pub enum Error {
     PathContainNonUnicode,
     InvalidPathComponent,
     RunCommandFailed,
+    UnknownCommand,
     Io(std::io::Error),
     Json(serde_json::Error),
     StripPrefix(std::path::StripPrefixError),
