@@ -153,7 +153,7 @@ pub fn layout(
 
         page_author_url: "https://social.pacna.org/@wei".to_string(),
         page_author: "Wei Tang".to_string(),
-        page_copyright_years: "2019-2023".to_string(),
+        page_copyright_years: "2019-2026".to_string(),
 
         page_license: rendered.data.license.clone(),
         page_license_code: rendered.data.license_code.clone(),
