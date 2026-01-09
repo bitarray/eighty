@@ -18,11 +18,7 @@
 
 use super::FullWorkspace;
 use crate::{Error, site::SiteName};
-use std::{
-    collections::HashMap,
-    ops::Deref,
-    path::{Path, PathBuf},
-};
+use std::{collections::HashMap, ops::Deref, path::PathBuf};
 
 pub struct SimplePostWorkspace(pub HashMap<SiteName, SimplePostSite>);
 
@@ -33,7 +29,7 @@ impl SimplePostWorkspace {
         for (site_name, full_site) in &full.sites {
             let mut post_site = HashMap::new();
 
-            for (asset_path, asset) in &full.assets.assets {
+            for (asset_path, asset) in &full_site.assets.assets {
                 post_site.insert(asset_path.clone(), asset.clone());
             }
 
@@ -56,25 +52,6 @@ impl SimplePostWorkspace {
                 },
             );
         }
-
-        let mut spec_site_files = HashMap::new();
-        spec_site_files.insert(
-            Path::new("index.html").to_owned(),
-            full.spec_site.index_content.as_bytes().to_owned(),
-        );
-        for (_, spec) in &full.spec_site.specs {
-            spec_site_files.insert(
-                spec.path().clone(),
-                spec.redirect_content.as_bytes().to_owned(),
-            );
-        }
-        sites.insert(
-            SiteName("specs".into()),
-            SimplePostSite {
-                base_url: "/".to_string(),
-                files: spec_site_files,
-            },
-        );
 
         Ok(Self(sites))
     }

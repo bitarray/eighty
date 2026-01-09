@@ -17,9 +17,5 @@
 // along with Eighty. If not, see <http://www.gnu.org/licenses/>.
 
 mod document;
-mod spec;
 
-pub use self::{
-    document::layout as document,
-    spec::{index_layout as spec_index, redirect_layout as spec_redirect},
-};
+pub use self::document::layout as document;
