@@ -17,10 +17,10 @@
 // along with Eighty. If not, see <http://www.gnu.org/licenses/>.
 
 use crate::{
+    Error,
     document::{DocumentMetadata, DocumentType},
     file::FileMetadata,
     site::{SiteMetadata, SiteName},
-    Error,
 };
 use std::{
     collections::HashMap,
@@ -89,10 +89,7 @@ impl MetadatadWorkspace {
     pub fn new_single(site_path: &Path) -> Result<(Self, SiteName), Error> {
         let mut sites = HashMap::new();
 
-        let site = Arc::new(SiteMetadata::new(
-            None,
-            &site_path,
-        )?);
+        let site = Arc::new(SiteMetadata::new(None, &site_path)?);
         let site_name = site.name.clone();
         let item = MetadatadSite::new(site.clone())?;
 
@@ -103,7 +100,7 @@ impl MetadatadWorkspace {
                 sites,
                 path: WorkspacePath::Site(site_path.to_owned()),
             },
-            site_name
+            site_name,
         ))
     }
 }

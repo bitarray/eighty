@@ -17,8 +17,8 @@
 // along with Eighty. If not, see <http://www.gnu.org/licenses/>.
 
 use eighty::{
-    workspace::{FullWorkspace, MetadatadWorkspace, RenderedWorkspace, SimplePostWorkspace},
     Error,
+    workspace::{FullWorkspace, MetadatadWorkspace, RenderedWorkspace, SimplePostWorkspace},
 };
 use std::{fs, path::Path};
 

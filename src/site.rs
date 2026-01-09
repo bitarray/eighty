@@ -17,7 +17,7 @@
 // along with Eighty. If not, see <http://www.gnu.org/licenses/>.
 
 use crate::Error;
-use serde::{de::Deserializer, Deserialize, Serialize};
+use serde::{Deserialize, Serialize, de::Deserializer};
 use std::{
     fmt,
     fs::File,
@@ -98,13 +98,16 @@ pub struct SiteMetadata {
 impl SiteMetadata {
     pub fn new(expected_sitename: Option<SiteName>, path: &Path) -> Result<SiteMetadata, Error> {
         let site_config_path = path.join("_site.json");
-        let site_config: SiteConfig = serde_json::from_reader(BufReader::new(File::open(site_config_path)?))?;
+        let site_config: SiteConfig =
+            serde_json::from_reader(BufReader::new(File::open(site_config_path)?))?;
 
         let name = SiteName(site_config.name.clone());
         if name.0 == "specs" {
             return Err(Error::ReservedSiteName);
         }
-        if let Some(expected_sitename) = expected_sitename && expected_sitename != name {
+        if let Some(expected_sitename) = expected_sitename
+            && expected_sitename != name
+        {
             return Err(Error::UnexpectedSiteName);
         }
 

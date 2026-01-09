@@ -17,9 +17,9 @@
 // along with Eighty. If not, see <http://www.gnu.org/licenses/>.
 
 use crate::{
+    Error,
     document::RenderedDocument,
     sitemap::{LocalSitemap, Sitemap, SitemapItem},
-    Error,
 };
 use handlebars::Handlebars;
 use serde::{Deserialize, Serialize};

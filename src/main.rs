@@ -18,9 +18,9 @@
 
 mod command;
 
+use clap::{Parser, Subcommand};
 use eighty::Error;
 use std::path::Path;
-use clap::{Parser, Subcommand};
 
 #[derive(Debug, Parser)]
 #[command(name = "eighty")]
@@ -50,19 +50,15 @@ fn main() -> Result<(), Error> {
     let args = Cli::parse();
 
     match args.command {
-        Command::Build {
-            site, target
-        } => {
+        Command::Build { site, target } => {
             let site_path = Path::new(&site);
             let target_path = Path::new(&target);
             command::build::build(&site_path, &target_path)?;
-        },
-        Command::Serve {
-            site
-        } => {
+        }
+        Command::Serve { site } => {
             let site_path = Path::new(&site);
             command::serve::serve(&site_path)?;
-        },
+        }
     }
 
     Ok(())

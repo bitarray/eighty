@@ -20,7 +20,7 @@ mod asciidoc;
 mod markdown;
 mod org;
 
-use crate::{site::SiteMetadata, Error};
+use crate::{Error, site::SiteMetadata};
 use std::{
     fmt,
     path::{Component, Path, PathBuf},

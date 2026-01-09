@@ -17,11 +17,11 @@
 // along with Eighty. If not, see <http://www.gnu.org/licenses/>.
 
 use crate::{
+    Error,
     document::RenderedDocument,
     file::FileMetadata,
     site::{SiteMetadata, SiteName},
     workspace::{MetadatadSite, MetadatadWorkspace, WorkspacePath},
-    Error,
 };
 use rayon::prelude::*;
 use std::{collections::HashMap, path::PathBuf, sync::Arc};

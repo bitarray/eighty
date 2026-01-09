@@ -17,7 +17,7 @@
 // along with Eighty. If not, see <http://www.gnu.org/licenses/>.
 
 use super::FullWorkspace;
-use crate::{site::SiteName, Error};
+use crate::{Error, site::SiteName};
 use std::{
     collections::HashMap,
     ops::Deref,

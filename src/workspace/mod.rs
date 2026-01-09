@@ -23,7 +23,7 @@ mod rendered;
 
 pub use self::{
     full::{FullDocument, FullSite, FullWorkspace},
-    metadatad::{WorkspacePath, MetadatadSite, MetadatadWorkspace},
+    metadatad::{MetadatadSite, MetadatadWorkspace, WorkspacePath},
     post::{SimplePostSite, SimplePostWorkspace},
     rendered::{RenderedSite, RenderedWorkspace},
 };

@@ -17,20 +17,20 @@
 // along with Eighty. If not, see <http://www.gnu.org/licenses/>.
 
 use eighty::{
+    Error,
     site::SiteName,
     workspace::{FullWorkspace, MetadatadWorkspace, RenderedWorkspace, SimplePostWorkspace},
-    Error,
 };
 use hyper::{
-    service::{make_service_fn, service_fn},
     Body, Request, Response, Server, StatusCode,
+    service::{make_service_fn, service_fn},
 };
 use notify::{DebouncedEvent, RecommendedWatcher, RecursiveMode, Watcher};
 use std::{
     fs,
     net::SocketAddr,
     path::Path,
-    sync::{mpsc::channel, Arc, RwLock},
+    sync::{Arc, RwLock, mpsc::channel},
     thread,
     time::Duration,
 };
@@ -87,9 +87,7 @@ async fn handle(
 pub async fn serve(site_path: &Path) -> Result<(), Error> {
     let addr = SocketAddr::from(([127, 0, 0, 1], 8000));
 
-    let context = Arc::new(RwLock::new(
-        async_build(site_path).await?,
-    ));
+    let context = Arc::new(RwLock::new(async_build(site_path).await?));
 
     let site_path = site_path.to_owned();
     let watch_context = context.clone();
@@ -123,8 +121,7 @@ pub async fn serve(site_path: &Path) -> Result<(), Error> {
 
                         if should_rebuild {
                             let mut context = watch_context.write()?;
-                            *context =
-                                build(&site_path, Some(&context))?;
+                            *context = build(&site_path, Some(&context))?;
 
                             println!("[workspace] rebuilt after source folder changes");
                         }
@@ -159,10 +156,9 @@ pub async fn serve(site_path: &Path) -> Result<(), Error> {
 async fn async_build(site_path: &Path) -> Result<Context, Error> {
     let site_path = site_path.to_owned();
 
-    let context = tokio::task::spawn_blocking(move || -> Result<_, Error> {
-        build(&site_path, None)
-    })
-    .await??;
+    let context =
+        tokio::task::spawn_blocking(move || -> Result<_, Error> { build(&site_path, None) })
+            .await??;
 
     Ok(context)
 }

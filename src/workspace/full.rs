@@ -17,6 +17,7 @@
 // along with Eighty. If not, see <http://www.gnu.org/licenses/>.
 
 use crate::{
+    Error,
     asset::AssetStore,
     document::{DocumentMetadata, DocumentName, RenderedData, Spec},
     file::FileMetadata,
@@ -25,7 +26,6 @@ use crate::{
     sitemap::{BreadcrumbItem, LocalSitemap, Sitemap},
     variable,
     workspace::{RenderedSite, RenderedWorkspace, WorkspacePath},
-    Error,
 };
 use handlebars::Handlebars;
 use std::{

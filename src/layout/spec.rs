@@ -16,7 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Eighty. If not, see <http://www.gnu.org/licenses/>.
 
-use crate::{document::Spec, Error};
+use crate::{Error, document::Spec};
 use handlebars::Handlebars;
 use serde::{Deserialize, Serialize};
 
