@@ -84,12 +84,20 @@ struct DocumentContextBreadcrumbItem {
 }
 
 impl DocumentContextSitemapItem {
-    pub fn from_sitemap_item(item: SitemapItem, max_depth: Option<usize>, site_base_url: &str) -> Self {
+    pub fn from_sitemap_item(
+        item: SitemapItem,
+        max_depth: Option<usize>,
+        site_base_url: &str,
+    ) -> Self {
         let show_children = max_depth.map(|d| d > 0).unwrap_or(true);
 
         Self {
             title: item.item.title,
-            url: format!("{}{}/", site_base_url, item.item.document_name.folder_path().display()),
+            url: format!(
+                "{}{}/",
+                site_base_url,
+                item.item.document_name.folder_path().display()
+            ),
             children: if show_children {
                 item.children
                     .iter()

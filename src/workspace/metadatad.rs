@@ -49,7 +49,10 @@ impl MetadatadWorkspace {
                 .into_string()
                 .map_err(|_| Error::PathContainNonUnicode)?;
 
-            if site_name.starts_with(".") || site_name.starts_with("_") || site_name.ends_with("@tmp") {
+            if site_name.starts_with(".")
+                || site_name.starts_with("_")
+                || site_name.ends_with("@tmp")
+            {
                 continue;
             }
 
