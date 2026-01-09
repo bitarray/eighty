@@ -3,7 +3,7 @@ GEM
   specs:
     asciidoctor (2.0.10)
     minitest (5.14.0)
-    rake (10.5.0)
+    rake (12.3.3)
     rouge (3.15.0)
 
 PLATFORMS
@@ -13,7 +13,7 @@ DEPENDENCIES
   asciidoctor (~> 2.0)
   bundler (~> 1.17)
   minitest (~> 5.0)
-  rake (~> 10.0)
+  rake (~> 12.3)
   rouge (~> 3.15)
 
 BUNDLED WITH
