@@ -31,13 +31,28 @@ use std::{
 use walkdir::WalkDir;
 
 #[derive(Eq, Clone, PartialEq, Debug)]
+pub enum WorkspacePath {
+    Root(PathBuf),
+    Site(PathBuf),
+}
+
+impl WorkspacePath {
+    pub fn path(&self) -> &Path {
+        match self {
+            Self::Root(path) => &path,
+            Self::Site(path) => &path,
+        }
+    }
+}
+
+#[derive(Eq, Clone, PartialEq, Debug)]
 pub struct MetadatadWorkspace {
-    pub root_path: PathBuf,
+    pub path: WorkspacePath,
     pub sites: HashMap<SiteName, MetadatadSite>,
 }
 
 impl MetadatadWorkspace {
-    pub fn new(root_path: &Path) -> Result<Self, Error> {
+    pub fn new_multi(root_path: &Path) -> Result<Self, Error> {
         let mut sites = HashMap::new();
 
         let root_subfolders = fs::read_dir(root_path)?;
@@ -57,18 +72,39 @@ impl MetadatadWorkspace {
             }
 
             let site = Arc::new(SiteMetadata::new(
-                SiteName(site_name.clone()),
+                Some(SiteName(site_name.clone())),
                 &site_folder.path(),
             )?);
             let item = MetadatadSite::new(site.clone())?;
 
-            sites.insert(SiteName(site_name), item);
+            sites.insert(site.name.clone(), item);
         }
 
         Ok(Self {
             sites,
-            root_path: root_path.to_owned(),
+            path: WorkspacePath::Root(root_path.to_owned()),
         })
+    }
+
+    pub fn new_single(site_path: &Path) -> Result<(Self, SiteName), Error> {
+        let mut sites = HashMap::new();
+
+        let site = Arc::new(SiteMetadata::new(
+            None,
+            &site_path,
+        )?);
+        let site_name = site.name.clone();
+        let item = MetadatadSite::new(site.clone())?;
+
+        sites.insert(site.name.clone(), item);
+
+        Ok((
+            Self {
+                sites,
+                path: WorkspacePath::Site(site_path.to_owned()),
+            },
+            site_name
+        ))
     }
 }
 

@@ -37,6 +37,7 @@ impl fmt::Display for SiteName {
 #[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SiteConfig {
+    pub name: String,
     pub title: String,
     #[serde(deserialize_with = "deserialize_site_url")]
     pub url: String,
@@ -95,16 +96,20 @@ pub struct SiteMetadata {
 }
 
 impl SiteMetadata {
-    pub fn new(name: SiteName, path: &Path) -> Result<SiteMetadata, Error> {
+    pub fn new(expected_sitename: Option<SiteName>, path: &Path) -> Result<SiteMetadata, Error> {
+        let site_config_path = path.join("_site.json");
+        let site_config: SiteConfig = serde_json::from_reader(BufReader::new(File::open(site_config_path)?))?;
+
+        let name = SiteName(site_config.name.clone());
         if name.0 == "specs" {
             return Err(Error::ReservedSiteName);
         }
-
-        let site_config_path = path.join("_site.json");
-        let site_config = serde_json::from_reader(BufReader::new(File::open(site_config_path)?))?;
+        if let Some(expected_sitename) = expected_sitename && expected_sitename != name {
+            return Err(Error::UnexpectedSiteName);
+        }
 
         let site = SiteMetadata {
-            name: name.clone(),
+            name,
             source_path: path.to_owned(),
             config: site_config,
         };

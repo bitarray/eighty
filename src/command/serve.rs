@@ -36,8 +36,10 @@ use std::{
 };
 
 pub struct Context {
+    #[allow(unused)]
     pub metadatad: MetadatadWorkspace,
     pub rendered: RenderedWorkspace,
+    #[allow(unused)]
     pub full: FullWorkspace,
     pub post: SimplePostWorkspace,
     pub site_name: SiteName,
@@ -82,15 +84,14 @@ async fn handle(
 }
 
 #[tokio::main]
-pub async fn serve(root_path: &Path, site_name: &str) -> Result<(), Error> {
+pub async fn serve(site_path: &Path) -> Result<(), Error> {
     let addr = SocketAddr::from(([127, 0, 0, 1], 8000));
 
     let context = Arc::new(RwLock::new(
-        async_build(root_path, SiteName(site_name.to_string())).await?,
+        async_build(site_path).await?,
     ));
 
-    let root_path = root_path.to_owned();
-    let site_name = site_name.to_owned();
+    let site_path = site_path.to_owned();
     let watch_context = context.clone();
 
     thread::spawn(move || {
@@ -98,7 +99,7 @@ pub async fn serve(root_path: &Path, site_name: &str) -> Result<(), Error> {
             let (tx, rx) = channel();
 
             let mut watcher: RecommendedWatcher = Watcher::new(tx, Duration::from_secs(2))?;
-            watcher.watch(root_path.clone(), RecursiveMode::Recursive)?;
+            watcher.watch(site_path.clone(), RecursiveMode::Recursive)?;
 
             loop {
                 match rx.recv() {
@@ -110,11 +111,11 @@ pub async fn serve(root_path: &Path, site_name: &str) -> Result<(), Error> {
                             | DebouncedEvent::Write(path)
                             | DebouncedEvent::Chmod(path)
                             | DebouncedEvent::Remove(path) => {
-                                should_rebuild_for_path(&path, &root_path)?
+                                should_rebuild_for_path(&path, &site_path)?
                             }
                             DebouncedEvent::Rename(p1, p2) => {
-                                should_rebuild_for_path(&p1, &root_path)?
-                                    || should_rebuild_for_path(&p2, &root_path)?
+                                should_rebuild_for_path(&p1, &site_path)?
+                                    || should_rebuild_for_path(&p2, &site_path)?
                             }
                             DebouncedEvent::Rescan => true,
                             DebouncedEvent::Error(err, _) => return Err(Error::Notify(err)),
@@ -123,7 +124,7 @@ pub async fn serve(root_path: &Path, site_name: &str) -> Result<(), Error> {
                         if should_rebuild {
                             let mut context = watch_context.write()?;
                             *context =
-                                build(&root_path, SiteName(site_name.to_string()), Some(&context))?;
+                                build(&site_path, Some(&context))?;
 
                             println!("[workspace] rebuilt after source folder changes");
                         }
@@ -155,19 +156,19 @@ pub async fn serve(root_path: &Path, site_name: &str) -> Result<(), Error> {
     Ok(())
 }
 
-async fn async_build(root_path: &Path, site_name: SiteName) -> Result<Context, Error> {
-    let root_path = root_path.to_owned();
+async fn async_build(site_path: &Path) -> Result<Context, Error> {
+    let site_path = site_path.to_owned();
 
     let context = tokio::task::spawn_blocking(move || -> Result<_, Error> {
-        build(&root_path, site_name, None)
+        build(&site_path, None)
     })
     .await??;
 
     Ok(context)
 }
 
-fn build(root_path: &Path, site_name: SiteName, old: Option<&Context>) -> Result<Context, Error> {
-    let metadatad = MetadatadWorkspace::new(&root_path)?;
+fn build(site_path: &Path, old: Option<&Context>) -> Result<Context, Error> {
+    let (metadatad, site_name) = MetadatadWorkspace::new_single(&site_path)?;
     let rendered = if let Some(old) = old {
         RenderedWorkspace::new_with_old(&metadatad, &old.rendered)?
     } else {

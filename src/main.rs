@@ -18,36 +18,51 @@
 
 mod command;
 
-use clap::{App, Arg, SubCommand};
 use eighty::Error;
 use std::path::Path;
+use clap::{Parser, Subcommand};
+
+#[derive(Debug, Parser)]
+#[command(name = "eighty")]
+#[command(about = "Static website generator, mainly for the Core Paper project.")]
+struct Cli {
+    #[command(subcommand)]
+    command: Command,
+}
+
+#[derive(Debug, Subcommand)]
+enum Command {
+    /// Build a project for production.
+    Build {
+        /// Site root.
+        site: String,
+        /// Build target.
+        target: String,
+    },
+    /// Serve a project in localhost for development.
+    Serve {
+        /// Site root.
+        site: String,
+    },
+}
 
 fn main() -> Result<(), Error> {
-    let matches = App::new("Eighty")
-        .subcommand(
-            SubCommand::with_name("build")
-                .arg(Arg::with_name("root").index(1).required(true))
-                .arg(Arg::with_name("target").index(2).required(true)),
-        )
-        .subcommand(
-            SubCommand::with_name("serve")
-                .arg(Arg::with_name("root").index(1).required(true))
-                .arg(Arg::with_name("site").index(2).required(true)),
-        )
-        .get_matches();
+    let args = Cli::parse();
 
-    if let Some(matches) = matches.subcommand_matches("build") {
-        let root_path = Path::new(matches.value_of("root").expect("root is required"));
-        let target_path = Path::new(matches.value_of("target").expect("target is required"));
-
-        command::build::build(&root_path, &target_path)?;
-    } else if let Some(matches) = matches.subcommand_matches("serve") {
-        let root_path = Path::new(matches.value_of("root").expect("root is required"));
-        let site_name = matches.value_of("site").expect("site is required");
-
-        command::serve::serve(&root_path, &site_name)?;
-    } else {
-        return Err(Error::UnknownCommand);
+    match args.command {
+        Command::Build {
+            site, target
+        } => {
+            let site_path = Path::new(&site);
+            let target_path = Path::new(&target);
+            command::build::build(&site_path, &target_path)?;
+        },
+        Command::Serve {
+            site
+        } => {
+            let site_path = Path::new(&site);
+            command::serve::serve(&site_path)?;
+        },
     }
 
     Ok(())

@@ -22,8 +22,8 @@ use eighty::{
 };
 use std::{fs, path::Path};
 
-pub fn build(root_path: &Path, target_path: &Path) -> Result<(), Error> {
-    let metadatad = MetadatadWorkspace::new(&root_path)?;
+pub fn build(site_path: &Path, target_path: &Path) -> Result<(), Error> {
+    let metadatad = MetadatadWorkspace::new_single(&site_path)?.0;
     let rendered = RenderedWorkspace::new(&metadatad)?;
     let full = FullWorkspace::new(&rendered)?;
     let post = SimplePostWorkspace::new(&full)?;

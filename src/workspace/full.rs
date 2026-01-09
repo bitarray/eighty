@@ -24,7 +24,7 @@ use crate::{
     site::{SiteMetadata, SiteName},
     sitemap::{BreadcrumbItem, LocalSitemap, Sitemap},
     variable,
-    workspace::{RenderedSite, RenderedWorkspace},
+    workspace::{RenderedSite, RenderedWorkspace, WorkspacePath},
     Error,
 };
 use handlebars::Handlebars;
@@ -35,7 +35,7 @@ use std::{
 };
 
 pub struct FullWorkspace {
-    pub root_path: PathBuf,
+    pub path: WorkspacePath,
     pub assets: AssetStore,
     pub sites: HashMap<SiteName, FullSite>,
     pub spec_site: FullSpecSite,
@@ -43,7 +43,7 @@ pub struct FullWorkspace {
 
 impl FullWorkspace {
     pub fn new(rendered: &RenderedWorkspace) -> Result<Self, Error> {
-        let assets = AssetStore::new(&rendered.root_path)?;
+        let assets = AssetStore::new(rendered.path.path())?;
 
         let sites = rendered
             .sites
@@ -79,7 +79,7 @@ impl FullWorkspace {
         let spec_site = FullSpecSite::new(specs, &assets.handlebars)?;
 
         Ok(Self {
-            root_path: rendered.root_path.clone(),
+            path: rendered.path.clone(),
             assets,
             sites,
             spec_site,

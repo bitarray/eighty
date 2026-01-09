@@ -24,6 +24,7 @@ pub enum Error {
     InvalidPathComponent,
     RunCommandFailed,
     UnknownCommand,
+    UnexpectedSiteName,
     Io(std::io::Error),
     Json(serde_json::Error),
     StripPrefix(std::path::StripPrefixError),

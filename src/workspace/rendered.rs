@@ -16,11 +16,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Eighty. If not, see <http://www.gnu.org/licenses/>.
 
-use super::{MetadatadSite, MetadatadWorkspace};
 use crate::{
     document::RenderedDocument,
     file::FileMetadata,
     site::{SiteMetadata, SiteName},
+    workspace::{MetadatadSite, MetadatadWorkspace, WorkspacePath},
     Error,
 };
 use rayon::prelude::*;
@@ -28,7 +28,7 @@ use std::{collections::HashMap, path::PathBuf, sync::Arc};
 
 #[derive(Eq, Clone, PartialEq, Debug)]
 pub struct RenderedWorkspace {
-    pub root_path: PathBuf,
+    pub path: WorkspacePath,
     pub sites: HashMap<SiteName, RenderedSite>,
 }
 
@@ -42,7 +42,7 @@ impl RenderedWorkspace {
 
         Ok(Self {
             sites,
-            root_path: metadata.root_path.clone(),
+            path: metadata.path.clone(),
         })
     }
 
@@ -64,7 +64,7 @@ impl RenderedWorkspace {
 
         Ok(Self {
             sites,
-            root_path: metadata.root_path.clone(),
+            path: metadata.path.clone(),
         })
     }
 }
