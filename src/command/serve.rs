@@ -34,6 +34,7 @@ use std::{
     thread,
     time::Duration,
 };
+use tracing::{info, error};
 
 pub struct Context {
     #[allow(unused)]
@@ -123,17 +124,17 @@ pub async fn serve(site_path: &Path) -> Result<(), Error> {
                             let mut context = watch_context.write()?;
                             *context = build(&site_path, Some(&context))?;
 
-                            println!("[workspace] rebuilt after source folder changes");
+                            info!("[workspace] rebuilt after source folder changes");
                         }
                     }
-                    Err(e) => println!("watch error: {:?}", e),
+                    Err(e) => error!("watch error: {:?}", e),
                 }
             }
         };
 
         match watching() {
-            Ok(()) => println!("watching thread returned"),
-            Err(e) => println!("watching thread error: {:?}", e),
+            Ok(()) => error!("watching thread returned"),
+            Err(e) => error!("watching thread error: {:?}", e),
         }
     });
 
@@ -145,9 +146,9 @@ pub async fn serve(site_path: &Path) -> Result<(), Error> {
 
     let server = Server::bind(&addr).serve(make_svc);
 
-    println!("[server] listening on port 8000");
+    info!("[server] listening on port 8000");
     if let Err(e) = server.await {
-        eprintln!("server error: {}", e);
+        error!("server error: {}", e);
     }
 
     Ok(())
