@@ -19,7 +19,7 @@
         pname = "eighty";
         version = "0.1.0";
         src = ./.;
-        cargoSha256 = "sha256-XE4/vQs9DwnQhokjbtteYZ+VSVjDO6Nz7ocUNasgk10=";
+        cargoLock.lockFile = ./Cargo.lock;
       };
 
     in pkgs.writeShellApplication {
@@ -30,15 +30,9 @@
       runtimeInputs = [ asciidocProcessor pandocProcessor ];
     };
 
-    apps."${system}".build = let
-      scriptPkg = pkgs.writeScriptBin "build-to-dist" ''
-        #!${pkgs.stdenv.shell}
-
-        ${self.packages."${system}".eighty}/bin/eighty build sites dist
-      '';
-    in {
+    apps."${system}".default = {
       type = "app";
-      program = "${scriptPkg}/bin/build-to-dist";
+      program = "${self.packages."${system}".eighty}/bin/eighty";
     };
   };
 }
