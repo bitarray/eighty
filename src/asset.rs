@@ -40,7 +40,6 @@ impl AssetStore {
         let css_path = asset_path.join("css");
         let font_path = asset_path.join("font");
         let js_path = asset_path.join("js");
-
         for part_path in [css_path, font_path, js_path] {
             for entry in WalkDir::new(&part_path) {
                 let entry = entry?;
@@ -51,6 +50,18 @@ impl AssetStore {
 
                     assets.insert(rel_path.to_owned(), content);
                 }
+            }
+        }
+
+        let static_path = asset_path.join("static");
+        for entry in WalkDir::new(&static_path) {
+            let entry = entry?;
+
+            if entry.file_type().is_file() {
+                let content = fs::read(entry.path())?;
+                let rel_path = entry.path().strip_prefix(&static_path)?;
+
+                assets.insert(rel_path.to_owned(), content);
             }
         }
 
