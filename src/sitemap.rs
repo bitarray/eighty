@@ -41,6 +41,7 @@ pub struct BreadcrumbItem {
     pub title: String,
     pub document_name: DocumentName,
     pub description: String,
+    pub order: Option<usize>,
 }
 
 #[derive(Eq, Clone, PartialEq, Debug)]
@@ -134,11 +135,15 @@ impl Sitemap {
             }
         }
     }
+
+    pub fn sort(&mut self) {
+        sort_sitemap_item_vec(&mut self.0)
+    }
 }
 
 impl From<Vec<BreadcrumbItem>> for Sitemap {
     fn from(mut name_titles: Vec<BreadcrumbItem>) -> Sitemap {
-        name_titles.sort_by_key(|k| k.document_name.clone());
+        name_titles.sort_by_key(|k| (k.document_name.labels.clone(), k.document_name.post.clone()));
         let ordered_name_titles = name_titles;
 
         let mut sitemap = Sitemap(Vec::new());
@@ -181,4 +186,11 @@ fn fmt_sitemap_item(f: &mut fmt::Formatter<'_>, item: &SitemapItem, prefix: &str
     }
 
     Ok(())
+}
+
+fn sort_sitemap_item_vec(items: &mut Vec<SitemapItem>) {
+    items.sort_by_key(|k| (k.item.order.unwrap_or(usize::MAX), k.item.document_name.labels.clone(), k.item.document_name.post.clone()));
+    for item in items {
+        sort_sitemap_item_vec(&mut item.children);
+    }
 }

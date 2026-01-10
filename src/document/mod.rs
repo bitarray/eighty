@@ -29,7 +29,7 @@ use std::{
 };
 use tracing::info;
 
-#[derive(Hash, Eq, Clone, PartialEq, Debug, PartialOrd, Ord)]
+#[derive(Hash, Eq, Clone, PartialEq, Debug)]
 pub struct DocumentName {
     pub id: Option<String>,
     pub labels: Vec<String>,
@@ -219,6 +219,7 @@ pub struct RenderedData {
     pub license: Option<String>,
     pub license_code: Option<String>,
     pub specs: Vec<Spec>,
+    pub order: Option<usize>,
 }
 
 #[derive(Eq, Clone, PartialEq, Debug)]
@@ -256,6 +257,7 @@ impl RenderedDocument {
                         description_content: None,
                         license: output.document.license,
                         license_code: output.document.license_code,
+                        order: output.document.order,
                         specs: output
                             .specs
                             .into_iter()
@@ -289,6 +291,7 @@ impl RenderedDocument {
                         license: None,
                         license_code: None,
                         specs: Vec::new(),
+                        order: output.order,
                     }),
                 }
             }
@@ -311,6 +314,7 @@ impl RenderedDocument {
                         license: None,
                         license_code: None,
                         specs: Vec::new(),
+                        order: output.order,
                     }),
                 }
             }

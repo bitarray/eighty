@@ -73,6 +73,7 @@ impl FullSite {
                 document_name: v.data.name.clone(),
                 title: v.data.sitemap_title.clone().unwrap_or(v.data.title.clone()),
                 description: v.data.description.clone(),
+                order: v.data.order.clone(),
             })
             .collect::<Vec<_>>();
 
