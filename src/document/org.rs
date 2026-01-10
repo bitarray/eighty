@@ -29,6 +29,7 @@ pub struct OrgOutput {
     pub order: Option<usize>,
     pub content: String,
     pub toc: String,
+    pub id: Option<String>,
 }
 
 pub fn process_org(site_path: &Path, rel_path: &Path) -> Result<OrgOutput, Error> {

@@ -240,7 +240,7 @@ impl RenderedDocument {
         Ok(match document.typ {
             DocumentType::AsciiDoc => {
                 let output = self::asciidoc::process_asciidoc(&site.source_path, &rel_file_path)?;
-                let id = None;
+                let id = output.id.clone();
                 let name = derive_name(rel_file_path, id)?;
 
                 RenderedDocument {
@@ -294,7 +294,7 @@ impl RenderedDocument {
             }
             DocumentType::Org => {
                 let output = self::org::process_org(&site.source_path, &rel_file_path)?;
-                let id = None;
+                let id = output.id.clone();
                 let name = derive_name(rel_file_path, id)?;
 
                 RenderedDocument {
