@@ -34,7 +34,7 @@ use std::{
     thread,
     time::Duration,
 };
-use tracing::{info, error};
+use tracing::{error, info};
 
 pub struct Context {
     #[allow(unused)]

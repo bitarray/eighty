@@ -189,7 +189,13 @@ fn fmt_sitemap_item(f: &mut fmt::Formatter<'_>, item: &SitemapItem, prefix: &str
 }
 
 fn sort_sitemap_item_vec(items: &mut Vec<SitemapItem>) {
-    items.sort_by_key(|k| (k.item.order.unwrap_or(usize::MAX), k.item.document_name.labels.clone(), k.item.document_name.post.clone()));
+    items.sort_by_key(|k| {
+        (
+            k.item.order.unwrap_or(usize::MAX),
+            k.item.document_name.labels.clone(),
+            k.item.document_name.post.clone(),
+        )
+    });
     for item in items {
         sort_sitemap_item_vec(&mut item.children);
     }
