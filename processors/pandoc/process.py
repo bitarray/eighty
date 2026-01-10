@@ -61,6 +61,7 @@ elif os.path.splitext(file_path)[1] == ".org":
     description = parse_meta(pandoc_raw, "subtitle")
     order = parse_meta(pandoc_raw, "order")
     document_id = parse_meta(pandoc_raw, "id")
+    sitemap_title = parse_meta(pandoc_raw, "sitemap")
 
     if not order is None:
         order = int(order)
@@ -76,6 +77,7 @@ elif os.path.splitext(file_path)[1] == ".org":
         "content": html,
         "toc": toc,
         "id": document_id,
+        "sitemapTitle": sitemap_title,
     }, sort_keys=True, indent=4)
 else:
     raise "Unknown file extension"

@@ -240,7 +240,7 @@ impl RenderedDocument {
         Ok(match document.typ {
             DocumentType::AsciiDoc => {
                 let output = self::asciidoc::process_asciidoc(&site.source_path, &rel_file_path)?;
-                let id = output.id.clone();
+                let id = output.document.id.clone();
                 let name = derive_name(rel_file_path, id)?;
 
                 RenderedDocument {
@@ -249,7 +249,7 @@ impl RenderedDocument {
                     data: Arc::new(RenderedData {
                         name,
                         title: output.document.title,
-                        sitemap_title: None,
+                        sitemap_title: output.document.sitemap_title,
                         content: output.document.content,
                         toc: output.document.toc,
                         description: output.document.description.clone(),
@@ -303,7 +303,7 @@ impl RenderedDocument {
                     data: Arc::new(RenderedData {
                         name,
                         title: output.title,
-                        sitemap_title: None,
+                        sitemap_title: output.sitemap_title,
                         content: output.content,
                         toc: Some(output.toc),
                         description: output.description,

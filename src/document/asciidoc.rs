@@ -42,6 +42,7 @@ pub struct AsciiDocOutputDocument {
     pub description: String,
     pub content: String,
     pub id: Option<String>,
+    pub sitemap_title: Option<String>,
 }
 
 #[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]

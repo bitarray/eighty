@@ -30,6 +30,7 @@ pub struct OrgOutput {
     pub content: String,
     pub toc: String,
     pub id: Option<String>,
+    pub sitemap_title: Option<String>,
 }
 
 pub fn process_org(site_path: &Path, rel_path: &Path) -> Result<OrgOutput, Error> {

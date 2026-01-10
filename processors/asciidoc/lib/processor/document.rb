@@ -44,6 +44,7 @@ module Processor
     item[:email] = doc.attributes["email"]
     item[:order] = doc.attributes["order"]
     item[:id] = doc.attributes["id"]
+    item[:sitemapTitle] = doc.attributes["sitemap"]
     if item[:order]
       item[:order] = Integer(item[:order])
     end
