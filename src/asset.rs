@@ -56,7 +56,7 @@ impl AssetStore {
 
         let mut handlebars = Handlebars::new();
         handlebars.set_strict_mode(true);
-        handlebars.register_templates_directory(".hbs", asset_path.join("layouts"))?;
+        handlebars.register_templates_directory(asset_path.join("layouts"), Default::default())?;
 
         Ok(AssetStore { assets, handlebars })
     }
