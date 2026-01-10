@@ -126,7 +126,7 @@ pub fn layout(
 
     let context = DocumentContext {
         site_title: site_config.title.clone(),
-        site_title_only: false,
+        site_title_only: site_config.title == rendered.data.title,
         site_base_url: site_config.base_url.clone(),
 
         page_title: rendered.data.title.clone(),
