@@ -21,7 +21,9 @@ mod markdown;
 mod org;
 
 use crate::{Error, site::SiteMetadata};
+use chrono::NaiveDate;
 use std::{
+    collections::BTreeMap,
     fmt,
     path::{Component, Path, PathBuf},
     sync::Arc,
@@ -208,6 +210,22 @@ fn derive_name(rel_file_path: &Path, id: Option<String>) -> Result<DocumentName,
 }
 
 #[derive(Eq, Clone, PartialEq, Debug)]
+pub enum RevisionData {
+    Created,
+    Custom(String),
+}
+
+impl RevisionData {
+    pub fn new(s: String) -> Self {
+        if &s == "created" {
+            Self::Created
+        } else {
+            Self::Custom(s)
+        }
+    }
+}
+
+#[derive(Eq, Clone, PartialEq, Debug)]
 pub struct RenderedData {
     pub name: DocumentName,
     pub title: String,
@@ -220,6 +238,7 @@ pub struct RenderedData {
     pub license_code: Option<String>,
     pub specs: Vec<Spec>,
     pub order: Option<usize>,
+    pub revisions: BTreeMap<NaiveDate, RevisionData>,
 }
 
 #[derive(Eq, Clone, PartialEq, Debug)]
@@ -269,6 +288,7 @@ impl RenderedDocument {
                                 anchor: spec.anchor,
                             })
                             .collect(),
+                        revisions: BTreeMap::new(),
                     }),
                 }
             }
@@ -292,6 +312,7 @@ impl RenderedDocument {
                         license_code: None,
                         specs: Vec::new(),
                         order: output.order,
+                        revisions: BTreeMap::new(),
                     }),
                 }
             }
@@ -299,6 +320,16 @@ impl RenderedDocument {
                 let output = self::org::process_org(&site.source_path, &rel_file_path)?;
                 let id = output.id.clone();
                 let name = derive_name(rel_file_path, id)?;
+                let revisions = output
+                    .revisions
+                    .into_iter()
+                    .map(|(k, v)| {
+                        Ok((
+                            NaiveDate::parse_from_str(&k, "%Y%m%d")?,
+                            RevisionData::new(v),
+                        ))
+                    })
+                    .collect::<Result<_, Error>>()?;
 
                 RenderedDocument {
                     site_metadata: site,
@@ -315,6 +346,7 @@ impl RenderedDocument {
                         license_code: None,
                         specs: Vec::new(),
                         order: output.order,
+                        revisions,
                     }),
                 }
             }

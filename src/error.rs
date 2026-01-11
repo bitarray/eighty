@@ -16,8 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Eighty. If not, see <http://www.gnu.org/licenses/>.
 
-use std::backtrace::Backtrace;
 use snafu::Snafu;
+use std::backtrace::Backtrace;
 
 #[derive(Debug, Snafu)]
 pub enum Error {
@@ -33,7 +33,7 @@ pub enum Error {
     },
     #[snafu(context(false))]
     Json {
-        source: serde_json::Error
+        source: serde_json::Error,
     },
     #[snafu(context(false))]
     StripPrefix {
@@ -47,7 +47,7 @@ pub enum Error {
 
     #[snafu(context(false))]
     TokioJoin {
-        source: tokio::task::JoinError
+        source: tokio::task::JoinError,
     },
     SiteNotExist,
     DocumentNotFound,
@@ -76,6 +76,11 @@ pub enum Error {
     UnprocessedRegexMatch,
     UnsupportedVariable,
     UnresolvedXreflink,
+
+    #[snafu(context(false))]
+    ChronoParse {
+        source: chrono::ParseError,
+    },
 }
 
 impl<T> From<std::sync::PoisonError<T>> for Error {

@@ -117,7 +117,9 @@ pub async fn serve(site_path: &Path) -> Result<(), Error> {
                                     || should_rebuild_for_path(&p2, &site_path)?
                             }
                             DebouncedEvent::Rescan => true,
-                            DebouncedEvent::Error(err, _) => return Err(Error::Notify { source: err }),
+                            DebouncedEvent::Error(err, _) => {
+                                return Err(Error::Notify { source: err });
+                            }
                         };
 
                         if should_rebuild {

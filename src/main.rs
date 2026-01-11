@@ -20,8 +20,8 @@ mod command;
 
 use clap::{Parser, Subcommand};
 use eighty::Error;
-use std::path::Path;
 use snafu::ErrorCompat;
+use std::path::Path;
 
 #[derive(Debug, Parser)]
 #[command(name = "eighty")]

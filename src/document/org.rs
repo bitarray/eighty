@@ -18,7 +18,7 @@
 
 use crate::Error;
 use serde::{Deserialize, Serialize};
-use std::{path::Path, process::Command, collections::BTreeMap};
+use std::{collections::BTreeMap, path::Path, process::Command};
 
 #[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
