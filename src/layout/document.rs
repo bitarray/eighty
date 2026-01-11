@@ -51,6 +51,15 @@ struct DocumentContext {
 
     pub sitemap: Option<Vec<DocumentContextSitemapItem>>,
     pub local_sitemap: DocumentContextLocalSitemap,
+
+    pub revisions: Vec<DocumentContextRevision>,
+}
+
+#[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct DocumentContextRevision {
+    pub date: String,
+    pub content: String,
 }
 
 #[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
@@ -220,6 +229,24 @@ pub fn layout(
             } else {
                 None
             },
+        },
+
+        revisions: {
+            let mut revisions = rendered
+                .data
+                .revisions
+                .clone()
+                .into_iter()
+                .collect::<Vec<_>>();
+            revisions.sort_by_key(|k| k.0);
+
+            revisions
+                .into_iter()
+                .map(|(k, v)| DocumentContextRevision {
+                    date: k.format("%Y-%m-%d").to_string(),
+                    content: format!("{}", v),
+                })
+                .collect()
         },
     };
 

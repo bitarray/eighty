@@ -225,6 +225,15 @@ impl RevisionData {
     }
 }
 
+impl fmt::Display for RevisionData {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Created => write!(f, "Document created."),
+            Self::Custom(c) => write!(f, "{}", c),
+        }
+    }
+}
+
 #[derive(Eq, Clone, PartialEq, Debug)]
 pub struct RenderedData {
     pub name: DocumentName,
