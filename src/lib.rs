@@ -18,7 +18,7 @@
 
 pub mod asset;
 pub mod document;
-mod error;
+pub mod error;
 pub mod file;
 pub mod layout;
 pub mod site;

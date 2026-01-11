@@ -16,41 +16,66 @@
 // You should have received a copy of the GNU General Public License
 // along with Eighty. If not, see <http://www.gnu.org/licenses/>.
 
-use std::fmt;
-use thiserror::Error;
+use std::backtrace::Backtrace;
+use snafu::Snafu;
 
-#[derive(Debug, Error)]
+#[derive(Debug, Snafu)]
 pub enum Error {
     PathContainNonUnicode,
     InvalidPathComponent,
     RunCommandFailed,
     UnknownCommand,
     UnexpectedSiteName,
-    Io(#[from] std::io::Error),
-    Json(#[from] serde_json::Error),
-    StripPrefix(#[from] std::path::StripPrefixError),
-    WalkDir(#[from] walkdir::Error),
+    #[snafu(context(false))]
+    Io {
+        source: std::io::Error,
+        backtrace: Backtrace,
+    },
+    #[snafu(context(false))]
+    Json {
+        source: serde_json::Error
+    },
+    #[snafu(context(false))]
+    StripPrefix {
+        source: std::path::StripPrefixError,
+    },
+    #[snafu(context(false))]
+    WalkDir {
+        source: walkdir::Error,
+    },
     ReservedSiteName,
 
-    TokioJoin(#[from] tokio::task::JoinError),
+    #[snafu(context(false))]
+    TokioJoin {
+        source: tokio::task::JoinError
+    },
     SiteNotExist,
     DocumentNotFound,
-    HyperHttp(#[from] hyper::http::Error),
-    HandlebarsTemplate(#[from] handlebars::TemplateError),
-    HandlebarsRender(#[from] handlebars::RenderError),
+    #[snafu(context(false))]
+    HyperHttp {
+        source: hyper::http::Error,
+    },
+    #[snafu(context(false))]
+    HandlebarsTemplate {
+        source: handlebars::TemplateError,
+    },
+    #[snafu(context(false))]
+    HandlebarsRender {
+        source: handlebars::RenderError,
+    },
 
     Poisoned,
-    Notify(#[from] notify::Error),
-    Regex(#[from] regex::Error),
+    #[snafu(context(false))]
+    Notify {
+        source: notify::Error,
+    },
+    #[snafu(context(false))]
+    Regex {
+        source: regex::Error,
+    },
     UnprocessedRegexMatch,
     UnsupportedVariable,
     UnresolvedXreflink,
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{:?}", self)
-    }
 }
 
 impl<T> From<std::sync::PoisonError<T>> for Error {

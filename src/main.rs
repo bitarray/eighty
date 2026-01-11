@@ -19,8 +19,9 @@
 mod command;
 
 use clap::{Parser, Subcommand};
-use anyhow::Result;
+use eighty::Error;
 use std::path::Path;
+use snafu::ErrorCompat;
 
 #[derive(Debug, Parser)]
 #[command(name = "eighty")]
@@ -53,7 +54,7 @@ enum Command {
     },
 }
 
-fn main() -> Result<()> {
+fn run() -> Result<(), Error> {
     tracing_subscriber::fmt::init();
 
     let args = Cli::parse();
@@ -76,4 +77,13 @@ fn main() -> Result<()> {
     }
 
     Ok(())
+}
+
+fn main() {
+    if let Err(e) = run() {
+        eprintln!("An error occurred: {}", e);
+        if let Some(bt) = ErrorCompat::backtrace(&e) {
+            eprintln!("{}", bt);
+        }
+    }
 }
