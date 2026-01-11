@@ -53,7 +53,7 @@ if os.path.splitext(file_path)[1] == ".md":
     if not order is None:
         order = int(order)
 
-    html = subprocess.run("pandoc -f markdown -t html {}".format(file_path), shell=True, check=True, capture_output=True).stdout.decode("utf-8")
+    html = subprocess.run("pandoc --filter pandoc-sidenote -f markdown -t html {}".format(file_path), shell=True, check=True, capture_output=True).stdout.decode("utf-8")
     toc = subprocess.run("pandoc --toc -f markdown -t html --template {} {}".format(TOC_TEMPLATE, file_path), shell=True, check=True, capture_output=True).stdout.decode("utf-8")
 
     content = json.dumps({
@@ -87,7 +87,7 @@ elif os.path.splitext(file_path)[1] == ".org":
             revision_key = k.removeprefix("revision[").removesuffix("]")
             revisions[revision_key] = custom_metas[k]
 
-    html = subprocess.run("pandoc -f org -t html {}".format(file_path), shell=True, check=True, capture_output=True).stdout.decode("utf-8")
+    html = subprocess.run("pandoc --filter pandoc-sidenote --shift-heading-level-by=1 -f org -t html {}".format(file_path), shell=True, check=True, capture_output=True).stdout.decode("utf-8")
     toc = subprocess.run("pandoc --toc -f org -t html --template {} {}".format(TOC_TEMPLATE, file_path), shell=True, check=True, capture_output=True).stdout.decode("utf-8")
 
     content = json.dumps({
