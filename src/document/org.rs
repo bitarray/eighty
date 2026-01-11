@@ -18,7 +18,7 @@
 
 use crate::Error;
 use serde::{Deserialize, Serialize};
-use std::{path::Path, process::Command};
+use std::{path::Path, process::Command, collections::BTreeMap};
 
 #[derive(Eq, Clone, PartialEq, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -31,6 +31,7 @@ pub struct OrgOutput {
     pub toc: String,
     pub id: Option<String>,
     pub sitemap_title: Option<String>,
+    pub revisions: BTreeMap<String, String>,
 }
 
 pub fn process_org(site_path: &Path, rel_path: &Path) -> Result<OrgOutput, Error> {
