@@ -17,30 +17,31 @@
 // along with Eighty. If not, see <http://www.gnu.org/licenses/>.
 
 use std::fmt;
+use thiserror::Error;
 
-#[derive(Debug)]
+#[derive(Debug, Error)]
 pub enum Error {
     PathContainNonUnicode,
     InvalidPathComponent,
     RunCommandFailed,
     UnknownCommand,
     UnexpectedSiteName,
-    Io(std::io::Error),
-    Json(serde_json::Error),
-    StripPrefix(std::path::StripPrefixError),
-    WalkDir(walkdir::Error),
+    Io(#[from] std::io::Error),
+    Json(#[from] serde_json::Error),
+    StripPrefix(#[from] std::path::StripPrefixError),
+    WalkDir(#[from] walkdir::Error),
     ReservedSiteName,
 
-    TokioJoin(tokio::task::JoinError),
+    TokioJoin(#[from] tokio::task::JoinError),
     SiteNotExist,
     DocumentNotFound,
-    HyperHttp(hyper::http::Error),
-    HandlebarsTemplate(handlebars::TemplateError),
-    HandlebarsRender(handlebars::RenderError),
+    HyperHttp(#[from] hyper::http::Error),
+    HandlebarsTemplate(#[from] handlebars::TemplateError),
+    HandlebarsRender(#[from] handlebars::RenderError),
 
     Poisoned,
-    Notify(notify::Error),
-    Regex(regex::Error),
+    Notify(#[from] notify::Error),
+    Regex(#[from] regex::Error),
     UnprocessedRegexMatch,
     UnsupportedVariable,
     UnresolvedXreflink,
@@ -52,70 +53,8 @@ impl fmt::Display for Error {
     }
 }
 
-impl std::error::Error for Error {}
-
-impl From<std::io::Error> for Error {
-    fn from(err: std::io::Error) -> Error {
-        Error::Io(err)
-    }
-}
-
-impl From<serde_json::Error> for Error {
-    fn from(err: serde_json::Error) -> Error {
-        Error::Json(err)
-    }
-}
-
-impl From<std::path::StripPrefixError> for Error {
-    fn from(err: std::path::StripPrefixError) -> Error {
-        Error::StripPrefix(err)
-    }
-}
-
-impl From<walkdir::Error> for Error {
-    fn from(err: walkdir::Error) -> Error {
-        Error::WalkDir(err)
-    }
-}
-
-impl From<tokio::task::JoinError> for Error {
-    fn from(err: tokio::task::JoinError) -> Error {
-        Error::TokioJoin(err)
-    }
-}
-
-impl From<hyper::http::Error> for Error {
-    fn from(err: hyper::http::Error) -> Error {
-        Error::HyperHttp(err)
-    }
-}
-
-impl From<handlebars::TemplateError> for Error {
-    fn from(err: handlebars::TemplateError) -> Error {
-        Error::HandlebarsTemplate(err)
-    }
-}
-
-impl From<handlebars::RenderError> for Error {
-    fn from(err: handlebars::RenderError) -> Error {
-        Error::HandlebarsRender(err)
-    }
-}
-
 impl<T> From<std::sync::PoisonError<T>> for Error {
     fn from(_: std::sync::PoisonError<T>) -> Error {
         Error::Poisoned
-    }
-}
-
-impl From<notify::Error> for Error {
-    fn from(err: notify::Error) -> Error {
-        Error::Notify(err)
-    }
-}
-
-impl From<regex::Error> for Error {
-    fn from(err: regex::Error) -> Error {
-        Error::Regex(err)
     }
 }

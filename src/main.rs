@@ -19,7 +19,7 @@
 mod command;
 
 use clap::{Parser, Subcommand};
-use eighty::Error;
+use anyhow::Result;
 use std::path::Path;
 
 #[derive(Debug, Parser)]
@@ -53,7 +53,7 @@ enum Command {
     },
 }
 
-fn main() -> Result<(), Error> {
+fn main() -> Result<()> {
     tracing_subscriber::fmt::init();
 
     let args = Cli::parse();
