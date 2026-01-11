@@ -81,6 +81,13 @@ pub enum Error {
     ChronoParse {
         source: chrono::ParseError,
     },
+    #[snafu(context(false))]
+    HtmlRewriteError {
+        source: lol_html::errors::RewritingError,
+    },
+
+    PathDiffFailed,
+    MalformedLink,
 }
 
 impl<T> From<std::sync::PoisonError<T>> for Error {

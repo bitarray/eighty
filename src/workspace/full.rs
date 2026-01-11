@@ -24,14 +24,12 @@ use crate::{
     layout,
     site::{SiteMetadata, SiteName},
     sitemap::{BreadcrumbItem, LocalSitemap, Sitemap},
-    variable,
+    utils,
+    variable::{self, Variable},
     workspace::{RenderedSite, RenderedWorkspace, WorkspacePath},
 };
-use std::{
-    collections::HashMap,
-    path::{Path, PathBuf},
-    sync::Arc,
-};
+use lol_html::{RewriteStrSettings, element, rewrite_str};
+use std::{collections::HashMap, path::PathBuf, sync::Arc};
 
 pub struct FullWorkspace {
     pub path: WorkspacePath,
@@ -94,37 +92,77 @@ impl FullSite {
             .map(|(_, v)| {
                 let local_sitemap = sitemap.local(&v.data.name).ok_or(Error::DocumentNotFound)?;
 
-                let mut content =
-                    layout::document(&v, &sitemap, &local_sitemap, &assets.handlebars)?;
+                let content = layout::document(&v, &sitemap, &local_sitemap, &assets.handlebars)?;
                 let variables = variable::search(&content)?;
 
-                for variable in variables {
-                    if &variable.name == "XREFLINK" {
-                        if let Some(xreflink) = variable.arguments {
-                            let resolved = format!(
-                                "{}{}/",
-                                rendered.site.config.base_url,
-                                xrefs
-                                    .get(Path::new(&xreflink))
-                                    .ok_or(Error::UnresolvedXreflink)?
-                                    .folder_path()
-                                    .display()
-                            );
+                let rewrote_content = rewrite_str(
+                    &content,
+                    RewriteStrSettings {
+                        element_content_handlers: vec![element!("a[href]", |el| {
+                            if let Some(href) = el.get_attribute("href")
+                                && !href.starts_with("/")
+                                && !href.starts_with("http:")
+                                && !href.starts_with("https:")
+                                && !href.starts_with("mailto:")
+                                && !href.starts_with("@@")
+                                && !href.starts_with("#")
+                            {
+                                let (href_target, section_target) = if href.contains("::") {
+                                    let mut s = href.splitn(2, "::");
+                                    let href_target = s.next().ok_or(Error::MalformedLink)?;
+                                    let mut section_target =
+                                        s.next().ok_or(Error::MalformedLink)?;
+                                    while let Some(s) = section_target.strip_prefix("*") {
+                                        section_target = s;
+                                    }
+                                    let section_target =
+                                        section_target.trim().to_lowercase().replace(" ", "-");
+                                    (href_target.to_string(), Some(section_target.to_string()))
+                                } else if href.contains("#") {
+                                    let mut s = href.splitn(2, "::");
+                                    let href_target = s.next().ok_or(Error::MalformedLink)?;
+                                    let section_target = s.next().ok_or(Error::MalformedLink)?;
+                                    (href_target.to_string(), Some(section_target.to_string()))
+                                } else {
+                                    (href, None)
+                                };
 
-                            content = content.replace(&variable.full, &resolved);
-                        } else {
-                            return Err(Error::UnsupportedVariable);
-                        }
-                    } else {
-                        return Err(Error::UnsupportedVariable);
-                    }
-                }
+                                let source_target = utils::normalize_path(
+                                    &v.metadata.rel_source_path.join("..").join(href_target),
+                                );
+
+                                if let Some(document_name) = xrefs.get(&source_target) {
+                                    let render_target = document_name.folder_path();
+                                    let rel_render_target = pathdiff::diff_paths(
+                                        &render_target,
+                                        &v.data.name.folder_path(),
+                                    )
+                                    .ok_or(Error::PathDiffFailed)?;
+                                    let target_with_section = match section_target {
+                                        Some(section_target) => format!(
+                                            "{}#{}",
+                                            rel_render_target.to_string_lossy(),
+                                            section_target
+                                        ),
+                                        None => format!("{}", rel_render_target.to_string_lossy()),
+                                    };
+
+                                    el.set_attribute("href", &target_with_section)?;
+                                }
+                            }
+
+                            Ok(())
+                        })],
+                        ..RewriteStrSettings::new()
+                    },
+                )?;
 
                 Ok(FullDocument {
                     site_metadata: v.site_metadata.clone(),
                     metadata: v.metadata.clone(),
                     rendered: v.data.clone(),
-                    content,
+                    content: rewrote_content,
+                    variables,
                     local_sitemap,
                 })
             })
@@ -148,4 +186,5 @@ pub struct FullDocument {
     pub rendered: Arc<RenderedData>,
     pub content: String,
     pub local_sitemap: LocalSitemap,
+    pub variables: Vec<Variable>,
 }

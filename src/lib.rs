@@ -23,6 +23,7 @@ pub mod file;
 pub mod layout;
 pub mod site;
 pub mod sitemap;
+pub mod utils;
 pub mod variable;
 pub mod workspace;
 
