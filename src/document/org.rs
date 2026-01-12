@@ -32,6 +32,8 @@ pub struct OrgOutput {
     pub id: Option<String>,
     pub sitemap_title: Option<String>,
     pub revisions: BTreeMap<String, String>,
+    pub license: Option<String>,
+    pub license_code: Option<String>,
 }
 
 pub fn process_org(site_path: &Path, rel_path: &Path) -> Result<OrgOutput, Error> {

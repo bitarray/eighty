@@ -77,6 +77,8 @@ elif os.path.splitext(file_path)[1] == ".org":
     order = custom_metas.get("order")
     document_id = custom_metas.get("id")
     sitemap_title = custom_metas.get("sitemap")
+    license = custom_metas.get("license")
+    license_code = custom_metas.get("license-code")
 
     if not order is None:
         order = int(order)
@@ -100,6 +102,8 @@ elif os.path.splitext(file_path)[1] == ".org":
         "id": document_id,
         "sitemapTitle": sitemap_title,
         "revisions": revisions,
+        "license": license,
+        "licenseCode": license_code,
     }, sort_keys=True, indent=4)
 else:
     raise "Unknown file extension"
